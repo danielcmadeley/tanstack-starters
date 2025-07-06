@@ -4,6 +4,12 @@ import { id, i, init, InstaQLEntity } from "@instantdb/react";
 // ID for app: Ordo
 const APP_ID = "eefd91d0-6742-462e-a293-02d9ce9421d1";
 
+if (!APP_ID) {
+  throw new Error(
+    "VITE_INSTANT_APP_ID environment variable is required. Please set it in your .env file.",
+  );
+}
+
 // Optional: Declare your schema!
 const schema = i.schema({
   entities: {
@@ -19,6 +25,8 @@ const schema = i.schema({
     },
   },
 });
+
+console.log("APP_ID:", APP_ID);
 
 type Todo = InstaQLEntity<typeof schema, "todos">;
 
