@@ -1,50 +1,90 @@
-import { configureFts } from "@/utils/fts_setup";
-import { AppSchema } from "@/library/powersync/AppSchema";
-import { SupabaseConnector } from "@/library/powersync/SupabaseConnector";
 import { CircularProgress } from "@mui/material";
-import { PowerSyncContext } from "@powersync/react";
-import { createBaseLogger, LogLevel, PowerSyncDatabase } from "@powersync/web";
-import React, { Suspense } from "react";
+import React, {
+  Suspense,
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+} from "react";
 import { NavigationPanelContextProvider } from "../navigation/NavigationPanelContext";
 import { AuthProvider } from "@/contexts/auth";
 
-const SupabaseContext = React.createContext<SupabaseConnector | null>(null);
-export const useSupabase = () => React.useContext(SupabaseContext);
+const SupabaseContext = createContext<any>(null);
+const PowerSyncContext = createContext<any>(null);
 
-export const db = new PowerSyncDatabase({
-  schema: AppSchema,
-  database: {
-    dbFilename: "example.db",
-  },
-});
+export const useSupabase = () => useContext(SupabaseContext);
+export const usePowerSync = () => useContext(PowerSyncContext);
 
 export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
-  const [connector] = React.useState(new SupabaseConnector());
-  const [powerSync] = React.useState(db);
+  const [connector, setConnector] = useState<any>(null);
+  const [powerSync, setPowerSync] = useState<any>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  React.useEffect(() => {
-    const logger = createBaseLogger();
-    logger.useDefaults(); // eslint-disable-line
-    logger.setLevel(LogLevel.DEBUG);
-    // For console testing purposes
-    (window as any)._powersync = powerSync;
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
-    powerSync.init();
-    const l = connector.registerListener({
-      initialized: () => {},
-      sessionStarted: () => {
-        powerSync.connect(connector);
-      },
-    });
+  useEffect(() => {
+    if (!isClient) return;
 
-    connector.init();
+    const initializePowerSync = async () => {
+      try {
+        // Dynamic imports to avoid SSR issues
+        const { configureFts } = await import("@/utils/fts_setup");
+        const { AppSchema } = await import("@/library/powersync/AppSchema");
+        const { SupabaseConnector } = await import(
+          "@/library/powersync/SupabaseConnector"
+        );
+        const { PowerSyncDatabase, createBaseLogger, LogLevel } = await import(
+          "@powersync/web"
+        );
 
-    // Demo using SQLite Full-Text Search with PowerSync.
-    // See https://docs.powersync.com/usage-examples/full-text-search for more details
-    configureFts();
+        const newConnector = new SupabaseConnector();
+        const newPowerSync = new PowerSyncDatabase({
+          schema: AppSchema,
+          database: {
+            dbFilename: "example.db",
+          },
+        });
 
-    return () => l?.();
-  }, [powerSync, connector]);
+        const logger = createBaseLogger();
+        logger.useDefaults(); // eslint-disable-line
+        logger.setLevel(LogLevel.DEBUG);
+        // For console testing purposes
+        (window as any)._powersync = newPowerSync;
+
+        await newPowerSync.init();
+        const l = newConnector.registerListener({
+          initialized: () => {},
+          sessionStarted: () => {
+            newPowerSync.connect(newConnector);
+          },
+        });
+
+        await newConnector.init();
+
+        // Demo using SQLite Full-Text Search with PowerSync.
+        // See https://docs.powersync.com/usage-examples/full-text-search for more details
+        await configureFts(newPowerSync);
+
+        setConnector(newConnector);
+        setPowerSync(newPowerSync);
+        setIsLoading(false);
+
+        return () => l?.();
+      } catch (error) {
+        console.error("Failed to initialize PowerSync:", error);
+        setIsLoading(false);
+      }
+    };
+
+    initializePowerSync();
+  }, [isClient]);
+
+  if (!isClient || isLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <Suspense fallback={<CircularProgress />}>

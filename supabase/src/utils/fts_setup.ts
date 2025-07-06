@@ -1,7 +1,6 @@
 import { AppSchema } from "@/library/powersync/AppSchema";
 import { Table } from "@powersync/web";
 import { ExtractType, generateJsonExtracts } from "./helpers";
-import { db } from "@/components/providers/SystemProvider";
 
 /**
  * Create a Full Text Search table for the given table and columns
@@ -13,6 +12,7 @@ import { db } from "@/components/providers/SystemProvider";
  * @param tokenizationMethod
  */
 async function createFtsTable(
+  db: any,
   tableName: string,
   columns: string[],
   tokenizationMethod = "unicode61",
@@ -22,7 +22,7 @@ async function createFtsTable(
   )?.internalName;
   const stringColumns = columns.join(", ");
 
-  return await db.writeTransaction(async (tx) => {
+  return await db.writeTransaction(async (tx: any) => {
     // Add FTS table
     await tx.execute(`
       CREATE VIRTUAL TABLE IF NOT EXISTS fts_${tableName}
@@ -65,7 +65,7 @@ async function createFtsTable(
  * that correspond to the tables in your schema and populate them
  * with the data you would like to search on
  */
-export async function configureFts(): Promise<void> {
-  await createFtsTable("lists", ["name"], "porter unicode61");
-  await createFtsTable("todos", ["description", "list_id"]);
+export async function configureFts(db: any): Promise<void> {
+  await createFtsTable(db, "lists", ["name"], "porter unicode61");
+  await createFtsTable(db, "todos", ["description", "list_id"]);
 }
