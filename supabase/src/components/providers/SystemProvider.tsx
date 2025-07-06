@@ -1,11 +1,12 @@
-import { configureFts } from '@/app/utils/fts_setup';
-import { AppSchema } from '@/library/powersync/AppSchema';
-import { SupabaseConnector } from '@/library/powersync/SupabaseConnector';
-import { CircularProgress } from '@mui/material';
-import { PowerSyncContext } from '@powersync/react';
-import { createBaseLogger, LogLevel, PowerSyncDatabase } from '@powersync/web';
-import React, { Suspense } from 'react';
-import { NavigationPanelContextProvider } from '../navigation/NavigationPanelContext';
+import { configureFts } from "@/utils/fts_setup";
+import { AppSchema } from "@/library/powersync/AppSchema";
+import { SupabaseConnector } from "@/library/powersync/SupabaseConnector";
+import { CircularProgress } from "@mui/material";
+import { PowerSyncContext } from "@powersync/react";
+import { createBaseLogger, LogLevel, PowerSyncDatabase } from "@powersync/web";
+import React, { Suspense } from "react";
+import { NavigationPanelContextProvider } from "../navigation/NavigationPanelContext";
+import { AuthProvider } from "@/contexts/auth";
 
 const SupabaseContext = React.createContext<SupabaseConnector | null>(null);
 export const useSupabase = () => React.useContext(SupabaseContext);
@@ -13,8 +14,8 @@ export const useSupabase = () => React.useContext(SupabaseContext);
 export const db = new PowerSyncDatabase({
   schema: AppSchema,
   database: {
-    dbFilename: 'example.db'
-  }
+    dbFilename: "example.db",
+  },
 });
 
 export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
@@ -30,10 +31,10 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
 
     powerSync.init();
     const l = connector.registerListener({
-      initialized: () => { },
+      initialized: () => {},
       sessionStarted: () => {
         powerSync.connect(connector);
-      }
+      },
     });
 
     connector.init();
@@ -49,7 +50,11 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
     <Suspense fallback={<CircularProgress />}>
       <PowerSyncContext.Provider value={powerSync}>
         <SupabaseContext.Provider value={connector}>
-          <NavigationPanelContextProvider>{children}</NavigationPanelContextProvider>
+          <AuthProvider>
+            <NavigationPanelContextProvider>
+              {children}
+            </NavigationPanelContextProvider>
+          </AuthProvider>
         </SupabaseContext.Provider>
       </PowerSyncContext.Provider>
     </Suspense>

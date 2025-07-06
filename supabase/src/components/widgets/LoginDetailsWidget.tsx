@@ -1,6 +1,15 @@
-import React from 'react';
-import { Box, Button, ButtonGroup, FormGroup, Paper, TextField, Typography, styled } from '@mui/material';
-import { Formik, FormikErrors } from 'formik';
+import React from "react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  FormGroup,
+  Paper,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
+import { Formik, FormikErrors } from "formik";
 
 export type LoginDetailsFormValues = {
   email: string;
@@ -19,29 +28,43 @@ export type LoginDetailsWidgetProps = {
   submitTitle: string;
 };
 
-export const LoginDetailsWidget: React.FC<LoginDetailsWidgetProps> = (props) => {
+export const LoginDetailsWidget: React.FC<LoginDetailsWidgetProps> = (
+  props,
+) => {
   return (
     <S.MainContainer>
       <S.LoginContainer elevation={1}>
         <S.LoginHeader variant="h4">{props.title}</S.LoginHeader>
         <S.LogoBox>
-          <S.Logo alt="PowerSync Logo" width={400} height={100} src="/powersync-logo.svg" />
-          <S.Logo alt="Supabase Logo" width={300} height={80} src="/supabase-logo.png" />
+          <S.Logo
+            alt="PowerSync Logo"
+            width={400}
+            height={100}
+            src="/powersync-logo.svg"
+          />
+          <S.Logo
+            alt="Supabase Logo"
+            width={300}
+            height={80}
+            src="/supabase-logo.png"
+          />
         </S.LogoBox>
         <Formik<LoginDetailsFormValues>
-          initialValues={{ email: '', password: '' }}
+          initialValues={{ email: "", password: "" }}
           validateOnChange={false}
           validateOnBlur={false}
           validate={(values) => {
             const errors: FormikErrors<LoginDetailsFormValues> = {};
             if (!values.email) {
-              errors.email = 'Required';
-            } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
-              errors.email = 'Invalid email address';
+              errors.email = "Required";
+            } else if (
+              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+            ) {
+              errors.email = "Invalid email address";
             }
 
             if (!values.password) {
-              errors.password = 'Required';
+              errors.password = "Required";
             }
             return errors;
           }}
@@ -51,11 +74,18 @@ export const LoginDetailsWidget: React.FC<LoginDetailsWidgetProps> = (props) => 
             } catch (ex: any) {
               console.error(ex);
               setSubmitting(false);
-              setFieldError('password', ex.message);
+              setFieldError("password", ex.message);
             }
           }}
         >
-          {({ values, errors, handleChange, handleBlur, isSubmitting, handleSubmit }) => (
+          {({
+            values,
+            errors,
+            handleChange,
+            handleBlur,
+            isSubmitting,
+            handleSubmit,
+          }) => (
             <form onSubmit={handleSubmit}>
               <FormGroup>
                 <S.TextInput
@@ -98,7 +128,11 @@ export const LoginDetailsWidget: React.FC<LoginDetailsWidgetProps> = (props) => 
                     </Button>
                   );
                 })}
-                <Button variant="outlined" type="submit" disabled={isSubmitting}>
+                <Button
+                  variant="outlined"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
                   {props.submitTitle}
                 </Button>
               </S.ActionButtonGroup>
@@ -127,7 +161,7 @@ namespace S {
     flex-direction: column;
     justify-content: center;
 
-    ${(props) => props.theme.breakpoints.up('sm')} {
+    ${(props) => props.theme.breakpoints.up("sm")} {
       flex-grow: 0;
       max-width: 600px;
     }
@@ -145,7 +179,7 @@ namespace S {
     margin: 40px;
   `;
 
-  export const Logo = styled('img')`
+  export const Logo = styled("img")`
     width: auto;
     height: auto;
     max-width: ${(props) => props.width}px;

@@ -1,18 +1,20 @@
-import React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import React from "react";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-export const ThemeProviderContainer: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+export const ThemeProviderContainer: React.FC<React.PropsWithChildren<{}>> = ({
+  children,
+}) => {
   const theme = React.useMemo(() => {
     return createTheme({
       palette: {
-        mode: 'dark',
+        mode: "dark",
         primary: {
-          main: '#c44eff'
-        }
+          main: "#c44eff",
+        },
       },
       typography: {
-        fontFamily: 'Rubik, sans-serif'
-      }
+        fontFamily: "Rubik, sans-serif",
+      },
     });
   }, []);
 

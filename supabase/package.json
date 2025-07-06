@@ -3,20 +3,23 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "start": "pnpm build && pnpm preview"
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "vite preview",
+    "preview": "vite preview"
   },
   "devDependencies": {
+    "@tanstack/router-devtools": "^1.125.3",
+    "@tanstack/router-plugin": "^1.125.3",
     "@types/bun": "latest",
     "@vitejs/plugin-react": "^4.6.0",
     "vite-plugin-pwa": "^1.0.1",
     "vite-plugin-top-level-await": "^1.5.0",
-    "vite-plugin-wasm": "^3.4.1"
+    "vite-plugin-wasm": "^3.4.1",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -28,11 +31,15 @@
     "@powersync/react": "^1.5.3",
     "@powersync/web": "^1.23.0",
     "@supabase/supabase-js": "^2.50.3",
+    "@tanstack/react-query": "^5.81.5",
+    "@tanstack/react-router": "^1.125.3",
+    "@tanstack/react-start": "^1.125.3",
+    "@tanstack/start": "^1.120.20",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "formik": "^2.4.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.3"
+    "vite": "^7.0.2"
   }
 }
